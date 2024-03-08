@@ -146,13 +146,13 @@ impl Section<'_> {
     }
 }
 
-impl Binary {
-    fn get_text_section(sections: &Self.sections) -> Option<&Section> {
+impl Binary<'_> {
+    fn get_text_section(sections: Vec<&Section>) -> Option<&Section> {
         for &s in sections {
             if s.name == ".text" {
-                return &s;
+                return Some(&s);
             } else {
-                return NULL;
+                return None;
             }
         }
     }
