@@ -65,7 +65,7 @@ struct Section<'a> {
     r#type: SectionType,
     vma: u64,
     size: u64,
-    bytes: &'a u8
+    bytes: u8
 }
 
 #[derive(Debug)]
@@ -77,8 +77,8 @@ struct Binary<'a> {
     arch_str: String,
     bits: u32,
     entry: u64, 
-    sections: Vec<Section<'a>>,
-    symbols: Vec<Symbol>,
+    sections: Vec<&'a Section<'a>>,
+    symbols: Vec<&'a Symbol>,
 }
 
 
@@ -141,21 +141,32 @@ impl Symbol {
 }
 
 impl Section<'_> {
-    fn contains(section: &Self, addr: u64) -> bool {
-        return (addr >= section.vma) && (addr - section.vma < section.size);
+    fn contains(&self, addr: u64) -> bool {
+        return (addr >= self.vma) && (addr - self.vma < self.size);
     }
 }
 
 impl Binary<'_> {
-    fn get_text_section(sections: Vec<&Section>) -> Option<&Section> {
-        for &s in sections {
+    fn get_text_section<'a>(&'a self) -> Option<&'a Section> {
+        let sections: &Vec<&Section<'_>> = &self.sections;
+
+        for s in sections {
             if s.name == ".text" {
-                return Some(&s);
-            } else {
-                return None;
-            }
+                return Some(s);
+            } 
         }
+        return None;
     }
+}
+
+
+fn load_binary(header: &ElfHeader, fname: String, bin: &mut Binary, r#type: BinaryType) -> i32 {
+    let mut ret: i32;
+
+    bin.filename = fname;
+    bin.entry = header.e_entry;
+    
+    return 11;    
 }
 
 fn main() -> std::io::Result<()> {
