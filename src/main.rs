@@ -146,6 +146,18 @@ impl Section<'_> {
     }
 }
 
+impl Binary {
+    fn get_text_section(sections: &Self.sections) -> Option<&Section> {
+        for &s in sections {
+            if s.name == ".text" {
+                return &s;
+            } else {
+                return NULL;
+            }
+        }
+    }
+}
+
 fn main() -> std::io::Result<()> {
     let mut f = File::open("chall")?;
     let mut buf_elf_header = [0_u8; 64];
